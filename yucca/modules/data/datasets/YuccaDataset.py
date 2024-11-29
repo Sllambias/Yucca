@@ -197,13 +197,13 @@ class YuccaTestPreprocessedDataset(torch.utils.data.Dataset):
         preprocessed_data_dir: str,
         pred_save_dir: str,
         overwrite_predictions: bool = False,
-        suffix: str = None,  # noqa U100
+        suffix: str = "pt",  # noqa U100
         pred_include_cases: list = None,
     ):
         self.data_path = preprocessed_data_dir
         self.pred_save_dir = pred_save_dir
         self.overwrite = overwrite_predictions
-        self.data_suffix = ".pt"
+        self.data_suffix = "." + suffix
         self.prediction_suffix = ".nii.gz"
         self.pred_include_cases = pred_include_cases
         self.unique_cases = np.unique(
@@ -234,7 +234,13 @@ class YuccaTestPreprocessedDataset(torch.utils.data.Dataset):
         # will convert them to a list of tuples of strings and a tuple of a string.
         # i.e. ['path1', 'path2'] -> [('path1',), ('path2',)]
         case_id = self.unique_cases[idx]
-        data = torch.load(os.path.join(self.data_path, case_id + self.data_suffix), weights_only=False)
+        path = os.path.join(self.data_path, case_id + self.data_suffix)
+
+        if self.data_suffix == ".pt":
+            data = torch.load(path, weights_only=False)
+        elif self.data_suffix == ".npy":
+            data = torch.tensor(np.load(path, allow_pickle=True))
+
         data_properties = load_pickle(os.path.join(self.data_path, case_id + ".pkl"))
         return {"data": data, "data_properties": data_properties, "case_id": case_id}
 

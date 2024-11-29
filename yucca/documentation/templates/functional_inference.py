@@ -62,7 +62,7 @@ if __name__ == "__main__":
         pred_save_dir=save_path,
         pred_data_dir=target_data_path,
         overwrite_predictions=True,
-        image_extension=".nii.gz",
+        image_extension="pt",
         test_dataset_class=YuccaTestPreprocessedDataset,
     )
 
